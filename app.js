@@ -1,62 +1,67 @@
-let canvas = document.getElementById('cnv')
-let ctx = canvas.getContext('2d')
-
-canvas.height = window.innerHeight
-canvas.width = window.innerWidth
-canvas.style.backgroundColor = '#b6b6b6'
-document.body.style.overflow = 'hidden'
-
-canvas.addEventListener("mousemove", e=>{
-   
-})
+let field = document.querySelector('.field')
 
 
-fill(ctx)
+fill(field)
 
-function fill(ctx) {
+function fill(f) {
   let rad = 10
-  draw(rad + 1, rad + 1, rad, ctx)
+  draw((rad + 1) * 2, (rad + 1) * 2, rad, f)
 }
 
-// TODO: Сделать падинг между боками кружков, чтобы были на одинаковом расстоянии!!!
-// ! ps : diameter = width of line + diameter
-// TODO: высчитывать каждое положение кружка и на n секунд изменять его fill, затем убирать через setTimeout
-
-function countSize(radius, fieldSize) {
-  let fillSize = Math.round(fieldSize / ((radius + 1) * 2))
-  let padding = (fieldSize - fillSize * (radius + 1) * 2) / 2
-  return { fillSize, padding }
-}
-function findCoordinateOfCircle(){
-
-}
-function reDraw(){
-
+function countSizes(InnerSize, size) {
+  let count = Math.floor(InnerSize / size)
+  let padding = (InnerSize - count * size) / 2
+  return { count, padding }
 }
 
-function draw(x, y, r, ctx) {
-  let { fillSize: fillWidth, padding: paddingW } = countSize(
-    r,
-    window.innerWidth
+function rc(){ // random color RGB 0-255
+  return (Math.random()*1000)/3.9
+}
+
+function draw(width, height, radius, field) {
+  let { count: wCount, padding: wPadding } = countSizes(
+    window.innerWidth,
+    width
   )
-  let { fillSize: fillHeight, padding: paddingH } = countSize(
-    r,
-    window.innerHeight
+  let { count: hCount, padding: hPadding } = countSizes(
+    window.innerHeight,
+    height
   )
-  let w = x
-  let h = y
-  for (let i = 0; i < fillWidth; i++) {
-    ctx.beginPath()
 
-    for (let k = 0; k < fillHeight; k++) {
-      ctx.beginPath()
+  let w = wPadding 
+  let h = hPadding 
+  let redo = prompt("how many seconds to redo", 1)
+  for (let i = 0; i < wCount; i++) {
 
-      ctx.arc(w + paddingW, h + paddingH, r, 0, 2 * Math.PI)
-      h += y + y
+    for (let j = 0; j < hCount; j++) {
+      //-- styles
+      let div = document.createElement('div')
+      div.style.border = '1px solid black'
+      div.style.borderRadius = '10px'
+      div.style.position = 'absolute'
 
-      ctx.stroke()
+      //-- sizes
+      div.style.width = width + 'px'
+      div.style.height = height + 'px'
+
+      //-- position
+      div.style.left = w+'px'
+      div.style.top = h+'px'
+      
+      //-- draw
+      div.id = hCount - Math.random() * 100 * (Math.random() * Math.random())
+      div.addEventListener('mouseover',(e)=>{
+        e.currentTarget.style.backgroundColor = `rgb(${rc()},${rc()},${rc()})`
+        setTimeout(()=>{
+          console.log(e.target.style.backgroundColor = '#999')
+          
+        }, redo*1000)
+      })
+      field.appendChild(div)
+
+      h+= height 
     }
-    h = y
-    w += x * 2
+    w+=width 
+    h= hPadding
   }
 }
